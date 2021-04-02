@@ -1,7 +1,6 @@
 #include "std_msgs/msg/string.hpp"
 
 #include "rclcpp/rclcpp.hpp"
-#include "diagnostic_updater/diagnostic_updater.hpp"
 
 class Chatter : public rclcpp::Node
 {
