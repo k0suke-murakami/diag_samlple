@@ -28,33 +28,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cmath>
-
 #include "std_msgs/msg/string.hpp"
 
 #include "rclcpp/rclcpp.hpp"
+#include "diagnostic_updater/diagnostic_updater.hpp"
+
+class Chatter : public rclcpp::Node
+{
+public:
+  Chatter();
+  diagnostic_updater::Updater updater_;
+};
+
+Chatter::Chatter()
+    : Node("chatter"),
+      updater_(this)
+{
+  // rclcpp::Rate loop_rate(1);
+  // size_t count_ = 1;
+  // std::unique_ptr<std_msgs::msg::String> msg_;
+  // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_;
+  // rclcpp::QoS qos(rclcpp::KeepLast(7));
+  // pub_ = this->create_publisher<std_msgs::msg::String>("chatter", qos);
+
+  // while (rclcpp::ok())
+  // {
+  //   msg_ = std::make_unique<std_msgs::msg::String>();
+  //   msg_->data = "Hello World: " + std::to_string(count_++);
+  //   RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", msg_->data.c_str());
+  //   pub_->publish(std::move(msg_));
+
+  //   rclcpp::spin_some(this->get_node_base_interface());
+  //   loop_rate.sleep();
+  // }
+}
 
 int main(int argc, char **argv)
 {
   rclcpp::init(argc, argv);
+  auto chatter_node = std::make_shared<Chatter>();
+  auto executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+  executor->add_node(chatter_node);
+  executor->spin();
+  rclcpp::shutdown();
 
-  auto node = rclcpp::Node::make_shared("sample");
-
-  rclcpp::Rate loop_rate(1);
-  size_t count_ = 1;
-  std::unique_ptr<std_msgs::msg::String> msg_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_;
-  rclcpp::QoS qos(rclcpp::KeepLast(7));
-  pub_ = node->create_publisher<std_msgs::msg::String>("chatter", qos);
-
-  while (rclcpp::ok())
-  {
-    msg_ = std::make_unique<std_msgs::msg::String>();
-    msg_->data = "Hello World: " + std::to_string(count_++);
-    RCLCPP_INFO(node->get_logger(), "Publishing: '%s'", msg_->data.c_str());
-    pub_->publish(std::move(msg_));
-
-    rclcpp::spin_some(node);
-    loop_rate.sleep();
-  }
+  // rclcpp::spin(std::make_shared<Chatter>());
+  // rclcpp::shutdown();
 }
